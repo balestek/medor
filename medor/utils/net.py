@@ -50,7 +50,7 @@ class Net:
             headers = self.rand_headers()
         # Build the socks5 proxy url for onion requests and set a longer timeout as onion requests are slower
         if self.onion:
-            self.proxy = "socks5://127.0.0.1:9150"
+            self.proxy = "socks5://127.0.0.1:9050"
             self.timeout = 15.0
         with httpx.Client(headers=headers, proxy=self.proxy, timeout=self.timeout) as c:
             # Make the request, get/post logic

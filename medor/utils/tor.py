@@ -210,8 +210,8 @@ class Tor:
             )
             exit()
         self.tor_path = str(Path(tor_path))
-        self.tor_port = 9150
-        self.tor_controller_port = 9151
+        self.tor_port = 9050
+        self.tor_controller_port = 9051
         # Test if tor is working with the path
         try:
             test_tor = process.launch_tor_with_config(
