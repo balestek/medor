@@ -1,0 +1,53 @@
+[build-system]
+requires = ["hatchling>=1.21.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "medor"
+dynamic = [
+  "version"
+]
+description = "medor is an OSINT tool that enables you to discover a WordPress website IP behind a WAF or behind Onion Services."
+authors = [
+  { name = "balestek"},
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+keywords = ["osint", "osint-tools", "osint-python", "open-source-intelligence", "information-gathering", "osint-tool", "wordpress", "darknet", "onion", "python", "pypi", "pipenv"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+    "Natural Language :: English",
+    "Environment :: Console"
+]
+requires-python = ">=3.8"
+dependencies = [
+    "brotlipy",
+    "stem",
+    "httpx[socks]",
+    "httpx",
+    "halo",
+    "colorama",
+    "docopt",
+    "lxml",
+    "beautifulsoup4",
+    "validators",
+    "python-dotenv"
+]
+
+[tool.hatch.version]
+path = "medor/__about__.py"
+
+[project.scripts]
+medor = "medor.medor:main"
+
+[project.urls]
+"Homepage" = "https://github.com/balestek/medor"
+"Bug Tracker" = "https://github.com/balestek/medor/issues"

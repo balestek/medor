@@ -1,0 +1,20 @@
+[[source]]
+url = 'https://pypi.python.org/simple'
+verify_ssl = true
+name = 'pypi'
+
+[requires]
+python_version = '3.8'
+
+[packages]
+httpx = {version = "*", extras = ["socks"]}
+brotlipy = '*'
+stem = '*'
+halo = '*'
+colorama = '*'
+docopt = '*'
+lxml = '*'
+beautifulsoup4 = "*"
+validators = "*"
+pwinput = '*'
+python-dotenv = '*'
