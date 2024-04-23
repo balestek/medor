@@ -320,7 +320,7 @@ class Bone:
                 spinner.stop_and_persist(
                     symbol=failure,
                     text=f"{Fore.RED}No IP found for {domain}.\n"
-                         f"   Xmlrpc.php might be protected.",
+                    f"   Xmlrpc.php might be protected.",
                 )
                 exit()
             else:
@@ -329,7 +329,7 @@ class Bone:
             spinner.stop_and_persist(
                 symbol=failure,
                 text=f"{Fore.RED}No IP found retrieved for {domain}.\n"
-                     f"   Xmlrpc.php might be protected.",
+                f"   Xmlrpc.php might be protected.",
             )
             exit()
         if not self.onion:

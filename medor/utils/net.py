@@ -6,9 +6,9 @@ from random import choice
 from re import match
 
 import httpx
-from dotenv import load_dotenv
 from bs4 import BeautifulSoup as bs
 from colorama import Fore
+from dotenv import load_dotenv
 from validators import url as valid_url, validator
 
 from medor.utils import uas
