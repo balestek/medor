@@ -37,6 +37,8 @@ _medor_ comes with few features:
 
 ## Installation
 
+Python 3.8+ is required.
+
 ### pipx (recommended)
 ```bash
 pipx install medor
