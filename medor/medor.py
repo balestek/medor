@@ -9,19 +9,19 @@ Usage:
     medor tor_path
 
 Arguments:
-    find <item>                         Find <item> IP:
-                                            domain.tld for domain (e.g. website.com)
-                                            website URL for site (e.g. https://www.website.com)
-                                            post URL for post (e.g. https://www.website.com/a-blog-post/)
-    tor_path                            Setup tor path for onion services
+    find <item>             Find <item> IP:
+                                domain.tld for domain (e.g. website.com)
+                                website URL for site (e.g. https://www.website.com)
+                                post URL for post (e.g. https://www.website.com/a-blog-post/)
+    tor_path                Setup tor path for onion services
 
 Options:
-    -h --help                           Show this help
-    -v --version                        Show medor version
-    -p --proxy=<proxy>                  Optional. Proxy to use :
-                                            with authentication : scheme://user:password@ip:port
-                                            without authentication : scheme://ip:port
-    -w --webhook=<webhook>              Optional. Custom webhook URL to send xmlrpc request to
+    -h --help               Show this help
+    -v --version            Show medor version
+    -p --proxy=<proxy>      Optional. Proxy to use :
+                                with authentication : scheme://user:password@ip:port
+                                without authentication : scheme://ip:port
+    -w --webhook=<webhook>  Optional. Custom webhook URL to send xmlrpc request to
 
 """
 
