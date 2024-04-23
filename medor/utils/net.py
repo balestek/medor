@@ -41,10 +41,7 @@ class Net:
             "Upgrade-Insecure-Requests": "1",
             "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/121.0",
         }
-        self.onion_pattern = r"^https?://[a-z2-7]{16,56}\.onion/?$"
-        load_dotenv()
-        self.tor_ip = os.getenv("tor_ip")
-        self.tor_port = os.getenv("tor_port")
+        self.onion_pattern = r"^http[s]?://[a-z2-7]{16,56}\.onion(/.*|)$"
 
     def connect(self, url, rtype="get", headers=None, content=None) -> httpx.Response:
         # Request to URLs function
@@ -53,7 +50,7 @@ class Net:
             headers = self.rand_headers()
         # Build the socks5 proxy url for onion requests and set a longer timeout as onion requests are slower
         if self.onion:
-            self.proxy = f"socks5://{self.tor_ip}:{self.tor_port}"
+            self.proxy = "socks5://127.0.0.1:9150"
             self.timeout = 15.0
         with httpx.Client(headers=headers, proxy=self.proxy, timeout=self.timeout) as c:
             # Make the request, get/post logic

@@ -1,5 +1,6 @@
 # coding: utf-8
 import os
+import time
 from pathlib import Path
 
 import httpx
@@ -195,9 +196,12 @@ class Tor:
             f"   https://github.com/balestek/medor?tab=readme-ov-file#install-tor",
         )
         tor_path = input(
-            f"➡️ Tor binary path:\n"
-            f"""  Linux and OSX : "tor"\n"""
-            f"Windows: full path to tor.exe. E.g." + r"C:\Tor\tor.exe" + "\n"
+            f"""➡️ Tor binary path or command:\n"""
+            f"""       Linux and OSX : "tor"\n"""
+            f"""       Windows: full path to tor.exe. E.g. """
+            + r"C:\Tor\tor.exe"
+            + "\n"
+            f"""   Enter the path: """
         )
         if len(tor_path) == 0:
             spinner.stop_and_persist(
@@ -206,6 +210,8 @@ class Tor:
             )
             exit()
         self.tor_path = str(Path(tor_path))
+        self.tor_port = 9150
+        self.tor_controller_port = 9151
         # Test if tor is working with the path
         try:
             test_tor = process.launch_tor_with_config(
@@ -240,9 +246,9 @@ class Tor:
                 )
             exit()
         test_tor.terminate()
+        time.sleep(1)
         # Set tor path in .env file
         set_key(Path(__file__).parent.parent.joinpath(".env"), "tor_path", tor_path)
         spinner.stop_and_persist(
-            symbol=success,
-            text=f"{Fore.GREEN}Tor path successfully set.\n"
+            symbol=success, text=f"{Fore.GREEN}Tor path successfully set.\n"
         )

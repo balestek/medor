@@ -49,10 +49,15 @@ class Bone:
             input_type = "domain"
         elif valid_url(item):
             parsed = urlparse(item)
-            if (parsed.scheme == "https" or "http") and parsed.netloc:
-                if parsed.path == "" or parsed.path == "/":
+            if (parsed.scheme == "https" or parsed.scheme == "http") and parsed.netloc:
+                if (
+                    (parsed.path == "" or parsed.path == "/")
+                    and parsed.params == ""
+                    and parsed.query == ""
+                    and parsed.fragment == ""
+                ):
                     input_type = "site"
-                elif parsed.path:
+                else:
                     input_type = "post"
         else:
             spinner.stop_and_persist(
@@ -118,7 +123,6 @@ class Bone:
             domain = ".".join(urlparse(site_url).netloc.split(".")[-2:])
         if ptype == "post":
             post_url = item
-            self.test_url(post_url)
             site_url = f"{urlparse(post_url).scheme}://{urlparse(post_url).netloc}"
             domain = ".".join(urlparse(post_url).netloc.split(".")[-2:])
         xmlrpc_url = site_url + "/xmlrpc.php"
@@ -162,8 +166,8 @@ class Bone:
             return post
         spinner.stop_and_persist(
             symbol=failure,
-            text=f"{Fore.RED}Medor can't find a post.\n"
-            """   Find a post manually and use item_type=post""",
+            text=f"{Fore.RED}medor can't find a post.\n"
+            "   Find a post manually to use with medor."
         )
         exit()
 
@@ -348,7 +352,7 @@ class Bone:
                     symbol=success,
                     text=f"{Style.BRIGHT}The website IP found with xmlrpc.php is different from {site_url} ({waf_ip}):\n"
                     f"   The IP medor found is {Fore.GREEN}{webhook_ip}{Style.RESET_ALL}. "
-                    f"   Webhook url : https://webhook.site/#!/view/{token} (valid for 3 days){Fore.RESET}\n"
+                    f"Webhook url : https://webhook.site/#!/view/{token} (valid for 3 days){Fore.RESET}\n"
                     f"{found(webhook_ip)}",
                 )
                 exit()
@@ -358,7 +362,7 @@ class Bone:
                     symbol=success,
                     text=f"{Style.BRIGHT}A website IP has been found with xmlrpc.php for {site_url}:\n"
                     f"   The IP is {Fore.GREEN}{webhook_ip}{Style.RESET_ALL}. "
-                    f"   Webhook url : https://webhook.site/#!/view/{token} (valid for 3 days){Fore.RESET}\n"
+                    f"Webhook url : https://webhook.site/#!/view/{token} (valid for 3 days){Fore.RESET}\n"
                     f"{found(webhook_ip)}",
                 )
                 exit()
