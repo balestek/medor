@@ -13,7 +13,7 @@ authors = [
 ]
 license = { file = "LICENSE" }
 readme = "README.md"
-keywords = ["osint", "osint-tools", "osint-python", "open-source-intelligence", "information-gathering", "osint-tool", "wordpress", "darknet", "onion", "python", "pypi", "pipenv"]
+keywords = ["osint", "osint-tools", "osint-python", "open-source-intelligence", "information-gathering", "investigation", "osint-tool", "wordpress", "xmlrpc", "xml-rpc", "wordpress-osint", "wp-osint", "pingback", "darknet", "onion", "onion-service", "python", "pypi", "pipenv"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
