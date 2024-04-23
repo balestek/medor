@@ -92,7 +92,7 @@ class Tor:
 
     def new_id(self):
         # Create a new tor identity before running medor functions
-        spinner.start("Setting new tor identity")
+        spinner.start("Setting new tor circuits")
         recommended = self.tor_controller.get_info("status/version/recommended").split(
             ","
         )
@@ -101,7 +101,7 @@ class Tor:
         # Check if a new identity can be set
         if self.tor_controller.is_newnym_available():
             self.tor_controller.signal(Signal.NEWNYM)
-            spinner.stop_and_persist(symbol=success, text="Tor new identity set")
+            spinner.stop_and_persist(symbol=success, text="Tor new circuits set")
 
     def shutdown(self):
         # Shut down tor process. Was previously used but take_ownership=True in tor_process() is more adapted
@@ -172,7 +172,7 @@ class Tor:
         if not env_path.exists():
             env_path.touch(mode=0o777)
             env_path.write_text(
-                "tor_port=9150\n" "controller_port=9151\n" "tor_ip='127.0.0.1'\n"
+                "tor_port=9050\n" "controller_port=9051\n" "tor_ip='127.0.0.1'\n"
             )
 
     def set_tor_path(self):
