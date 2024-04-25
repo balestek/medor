@@ -1,6 +1,7 @@
 # coding: utf-8
 from colorama import Fore, Style
 from halo import Halo
+
 from medor.__about__ import __version__ as version
 
 success = "🦴".encode("utf-8")

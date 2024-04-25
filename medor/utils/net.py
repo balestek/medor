@@ -1,6 +1,5 @@
 # coding: utf-8
 import importlib
-import os
 from pathlib import Path
 from random import choice
 from re import match
@@ -8,7 +7,6 @@ from re import match
 import httpx
 from bs4 import BeautifulSoup as bs
 from colorama import Fore
-from dotenv import load_dotenv
 from validators import url as valid_url, validator
 
 from medor.utils import uas

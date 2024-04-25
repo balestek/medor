@@ -197,7 +197,7 @@ class Tor:
         )
         tor_path = input(
             f"""➡️ Tor binary path or command:\n"""
-            f"""       Linux and OSX : "tor"\n"""
+            f"""       Linux and OSX : "tor" or "/usr/bin/tor" on debian/ubuntu\n"""
             f"""       Windows: full path to tor.exe. E.g. """
             + r"C:\Tor\tor.exe"
             + "\n"
@@ -248,6 +248,7 @@ class Tor:
                 )
             exit()
         test_tor.terminate()
+        # wait a bit for tor to exit cleanly
         time.sleep(1)
         # Set tor path in .env file
         set_key(Path(__file__).parent.parent.joinpath(".env"), "tor_path", tor_path)

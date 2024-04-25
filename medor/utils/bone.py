@@ -291,7 +291,6 @@ class Bone:
                     f"   It might be protected or offline."
                 )
                 exit()
-
         except httpx.HTTPError as e:
             spinner.stop_and_persist(
                 symbol=failure,
@@ -319,7 +318,7 @@ class Bone:
             if not res.json()["ip"]:
                 spinner.stop_and_persist(
                     symbol=failure,
-                    text=f" {Fore.RED}No IP retrieved for {domain}.\n"
+                    text=f"{Fore.RED} No IP retrieved for {domain}.\n"
                     f"   Xmlrpc.php might be protected.",
                 )
                 exit()
@@ -328,7 +327,7 @@ class Bone:
         except:
             spinner.stop_and_persist(
                 symbol=failure,
-                text=f" {Fore.RED}No IP retrieved for {domain}.\n"
+                text=f"{Fore.RED} No IP retrieved for {domain}.\n"
                 f"   Xmlrpc.php might be protected.",
             )
             exit()
