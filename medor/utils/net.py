@@ -77,14 +77,14 @@ class Net:
                 else:
                     spinner.stop_and_persist(
                         symbol=failure,
-                        text=f"{Fore.RED}{url} request is not successful.\n"
+                        text=f"{Fore.RED} {url} request is not successful.\n"
                              "   Check the url.",
                     )
                     exit()
             except httpx.HTTPError as e:
                 spinner.stop_and_persist(
                     symbol=failure,
-                    text=f"{Fore.RED}{url} request is not successful : {e}.\n"
+                    text=f"{Fore.RED} {url} request is not successful : {e}.\n"
                          "   Check the url.",
                 )
                 exit()
@@ -110,7 +110,7 @@ class Net:
             ua = self.get_ua_failover()
         if ua is None:
             spinner.stop_and_persist(
-                symbol=warning, text=f"{Fore.YELLOW}User-Agents can't be updated"
+                symbol=warning, text=f"{Fore.YELLOW} User-Agents can't be updated"
             )
         else:
             with open(Path(self.medor_path, "uas.py"), "w", encoding="utf-8)") as f:
@@ -166,14 +166,14 @@ class Net:
                 if proxy and (res.text == real_ip):
                     spinner.stop_and_persist(
                         symbol=failure,
-                        text=f"{Fore.RED}Proxy check failed:\n"
+                        text=f"{Fore.RED} Proxy check failed:\n"
                              f"   Your proxy IP ({proxy}) is the same as your real ip ({real_ip}).",
                     )
                     exit()
         except httpx.HTTPError as e:
             spinner.stop_and_persist(
                 symbol=failure,
-                text=f"{Fore.RED}Proxy {proxy} check failed : {e}.\n"
+                text=f"{Fore.RED} Proxy {proxy} check failed : {e}.\n"
                      f"   Check the proxy url or if https://api64.ipify.org is online.",
             )
             exit()

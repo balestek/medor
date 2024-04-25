@@ -224,8 +224,10 @@ class Tor:
                 take_ownership=True,
             )
         except OSError as e:
-            if ("Acting on config options left us in a broken state" in str(e)) or (
-                "Invalid SocksPort configuration" in str(e)
+            if (
+                ("Acting on config options left us in a broken state" in str(e))
+                or ("Invalid SocksPort configuration" in str(e))
+                or ("Failed to bind one of the listener ports" in str(e))
             ):
                 spinner.stop_and_persist(
                     symbol=failure,

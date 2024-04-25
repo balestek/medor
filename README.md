@@ -1,7 +1,7 @@
 # 🐕 medor
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/balestek/medor/master/media/medor.png">
+  <img src="https://raw.githubusercontent.com/balestek/medor/master/media/medor-logo.png">
 </p>
 
 [![PyPI version](https://badge.fury.io/py/medor.svg)](https://badge.fury.io/py/medor)
@@ -17,7 +17,7 @@ Medor is an OSINT (Open Source Intelligence) tool that enables you to discover t
 It requests xmlrpc.php to get the IP behind the WAF thanks to a webhook provider.
 
 <p align="center">
-  <img width="600px" src="https://raw.githubusercontent.com/balestek/medor/master/media/medor.py.png">
+  <img width="600px" src="https://raw.githubusercontent.com/balestek/medor/master/media/medor-screenshot.png">
 </p>
 
 It requires several kibbles to work:
