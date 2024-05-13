@@ -237,7 +237,7 @@ class Tor:
         )
         tor_path = input(
             f"""➡️ If you installed Tor enter its binary path or command:\n"""
-            f"""       Linux and OSX : "tor" on debian/ubuntu\n"""
+            f"""       Linux and OSX : "tor" on debian/ubuntu or full path\n"""
             f"""       Windows: full path to tor.exe. E.g. """
             + r"C:\Tor\tor.exe"
             + "\n"
