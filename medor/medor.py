@@ -64,7 +64,7 @@ def main():
         proxy = args["--proxy"]
     if args["find"] and ".onion" in args["<item>"]:
         if args["--proxy"]:
-            exit(
+            print(
                 f"{failure} {Fore.RED} --proxy can't be used with onion services (.onion website)\n"
                 f"Tor will be used instead"
             )

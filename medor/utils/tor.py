@@ -6,7 +6,7 @@ from pathlib import Path
 import httpx
 import stem
 from colorama import Fore
-from dotenv import load_dotenv, set_key
+from dotenv import load_dotenv, find_dotenv, set_key
 from stem import Signal, process, CircStatus
 from stem.control import Controller
 from stem.version import get_system_tor_version, Requirement
@@ -17,13 +17,13 @@ from medor.utils.util import success, failure, warning, spinner
 
 class Tor:
     def __init__(self) -> None:
-        self.net = net.Net(onion=True, timeout=10.0)
+        self.net = None
         self.tor = None
         self.tor_controller = None
         load_dotenv()
-        self.tor_path = os.getenv("tor_path")
-        self.tor_port = os.getenv("tor_port")
-        self.tor_controller_port = os.getenv("controller_port")
+        self.tor_path = None
+        self.tor_port = "9250"
+        self.tor_controller_port = "9251"
         self.tor_browser = None
 
     def launch(self) -> None:
@@ -33,6 +33,7 @@ class Tor:
             self.ini_connection()
             # self.tor_controller = self.tor_control()
         self.new_id()
+        self.net = net.Net(onion=True, timeout=10.0, tor = self.get_tor_ports())
         self.verify_tor()
 
     def ini_connection(self) -> None:
@@ -166,9 +167,6 @@ class Tor:
         env_path = Path(__file__).parent.parent.joinpath(".env")
         if not env_path.exists():
             env_path.touch(mode=0o777)
-            env_path.write_text(
-                "tor_port=9250\ncontroller_port=9251\ntor_ip='127.0.0.1'\ntor_browser=0\n"
-            )
 
     def check_tor_browser(self) -> bool or None:
         # Check if tor browser is running
@@ -188,9 +186,9 @@ class Tor:
     def check_tor_process(self, tor_path) -> None:
         # Test if tor is working with the provided path
         try:
-            self.tor_path = str(Path(tor_path))
-            self.tor_port = "9250"
-            self.tor_controller_port = "9251"
+            self.tor_path = tor_path
+            # self.tor_port = "9250"
+            # self.tor_controller_port = "9251"
             test_tor = process.launch_tor_with_config(
                 config={
                     "ControlPort": self.tor_controller_port,
@@ -255,16 +253,15 @@ class Tor:
 
     def config_tor(self) -> None:
         self.check_env()
-        set_key(Path(__file__).parent.parent.joinpath(".env"), "tor_browser", "0")
         if self.check_tor_browser():
             self.tor_browser = True
-            set_key(Path(__file__).parent.parent.joinpath(".env"), "tor_browser", "1")
             return
         load_dotenv()
         tor_path = os.getenv("tor_path")
         if not tor_path:
             self.tor_setup()
         else:
-            self.tor_path = str(Path(tor_path))
-            self.tor_port = os.getenv("tor_port")
-            self.tor_controller_port = os.getenv("controller_port")
+            self.tor_path = tor_path
+
+    def get_tor_ports(self) -> tuple:
+        return self.tor_port, self.tor_controller_port, self.tor_browser

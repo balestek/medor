@@ -38,7 +38,7 @@ class Bone:
         self.site_url = ""
         self.post_url = ""
         self.xmlrpc_url = ""
-        self.net = net.Net(onion=onion, proxy=proxy)
+        self.net = None
         self.parse_input()
 
     def parse_input(self) -> None:
@@ -76,7 +76,12 @@ class Bone:
         # Chaining main functions
         # Launch tor if the input is an onion service
         if self.onion:
-            Tor().launch()
+            tor = Tor()
+            tor.launch()
+            tor_specs = tor.get_tor_ports()
+        else:
+            tor_specs = None
+        self.net = net.Net(onion=self.onion, proxy=self.proxy, tor=tor_specs)
         # Update user agent and check proxy
         self.net.update_ua()
         if self.proxy and not self.onion:
@@ -140,7 +145,11 @@ class Bone:
 
     def find_domain_scheme(self, domain: str) -> str:
         # Test the domain with different schemes to determine the right one
-        schemes = ["http://", "https://"] if self.onion else ["https://", "https://www.", "http://", "http://www."]
+        schemes = (
+            ["http://", "https://"]
+            if self.onion
+            else ["https://", "https://www.", "http://", "http://www."]
+        )
         for scheme in schemes:
             try:
                 url = scheme + domain
@@ -167,7 +176,7 @@ class Bone:
         spinner.stop_and_persist(
             symbol=failure,
             text=f" {Fore.RED}medor can't find a post.\n"
-            "   Find a post manually to use with medor."
+            "   Find a post manually to use with medor.",
         )
         exit()
 
@@ -208,14 +217,14 @@ class Bone:
             else:
                 spinner.stop_and_persist(
                     symbol=failure,
-                    text=f" {Fore.RED}{url} is not accessible. medor won't work."
+                    text=f" {Fore.RED}{url} is not accessible. medor won't work.",
                 )
                 exit()
         except Exception as e:
             spinner.stop_and_persist(
                 symbol=failure,
                 text=f" {Fore.RED}{url} is not accessible. medor won't work.\n"
-                f"   {e}"
+                f"   {e}",
             )
             exit()
 
@@ -288,14 +297,14 @@ class Bone:
                 spinner.stop_and_persist(
                     symbol=failure,
                     text=f" {Fore.RED}{xmlrpc_url}request has not been successful.\n"
-                    f"   It might be protected or offline."
+                    f"   It might be protected or offline.",
                 )
                 exit()
         except httpx.HTTPError as e:
             spinner.stop_and_persist(
                 symbol=failure,
                 text=f" {Fore.RED}{xmlrpc_url} request has not been successful : {e}.\n"
-                f"   It might be protected or offline."
+                f"   It might be protected or offline.",
             )
             exit()
 
@@ -310,8 +319,7 @@ class Bone:
             )
         except httpx.HTTPError as e:
             spinner.stop_and_persist(
-                symbol=failure,
-                text=f" {Fore.RED}Webhook is not reachable : {e}."
+                symbol=failure, text=f" {Fore.RED}Webhook is not reachable : {e}."
             )
             exit()
         try:
@@ -338,15 +346,15 @@ class Bone:
                 spinner.stop_and_persist(
                     symbol=warning,
                     text=f" {Fore.RED}The website IP found with xmlrpc.php is the same as {site_url}: {webhook_ip}.\n"
-                    f"   {site_url} is not behind WAF. No need of medor."
+                    f"   {site_url} is not behind WAF. No need of medor.",
                 )
                 exit()
             else:
                 spinner.stop_and_persist(
                     symbol=found,
                     text=f" {Style.BRIGHT}The website IP found with xmlrpc.php is different from {site_url} ({waf_ip}):\n"
-                         f"   Webhook url : https://webhook.site/#!/view/{token} (valid for 3 days).{Fore.RESET}\n\n"
-                         f"   medor found the IP address {Fore.GREEN}{webhook_ip}{Style.RESET_ALL}."
+                    f"   Webhook url : https://webhook.site/#!/view/{token} (valid for 3 days).{Fore.RESET}\n\n"
+                    f"   medor found the IP address {Fore.GREEN}{webhook_ip}{Style.RESET_ALL}.",
                 )
                 exit()
         elif self.onion:
@@ -354,8 +362,7 @@ class Bone:
                 spinner.stop_and_persist(
                     symbol=found,
                     text=f" {Style.BRIGHT}A website IP has been found with xmlrpc.php for {site_url}:\n"
-                         f"   Webhook url : https://webhook.site/#!/view/{token} (valid for 3 days).{Fore.RESET}\n\n"
-                         f"   medor found the IP address {Fore.GREEN}{webhook_ip}{Style.RESET_ALL}."
-
+                    f"   Webhook url : https://webhook.site/#!/view/{token} (valid for 3 days).{Fore.RESET}\n\n"
+                    f"   medor found the IP address {Fore.GREEN}{webhook_ip}{Style.RESET_ALL}.",
                 )
                 exit()

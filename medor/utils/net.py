@@ -9,7 +9,6 @@ import httpx
 from bs4 import BeautifulSoup as bs
 from colorama import Fore
 from validators import url as valid_url, validator
-from dotenv import load_dotenv
 
 from medor.utils import uas
 from medor.utils.util import success, failure, warning, spinner
@@ -21,13 +20,14 @@ class Net:
         onion: bool = False,
         proxy: str or None or dict[str, str] = None,
         timeout: float = 5.0,
+        tor: tuple = None
     ):
         self.medor_path = Path(__file__).parent
         self.onion = onion
         self.uas = uas.uas
         self.proxy = proxy
         self.timeout = timeout
-
+        self.tor_specs = tor
         self._headers = {
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
             "Accept-Encoding": "gzip, deflate, br",
@@ -51,12 +51,8 @@ class Net:
             headers = self.rand_headers()
         # Set port for Onion Services and set a longer timeout
         if self.onion:
-            load_dotenv()
-            self.proxy = (
-                "socks5://127.0.0.1:9150"
-                if os.getenv("tor_browser") == "1"
-                else "socks5://127.0.0.1:9250"
-            )
+            if self.tor_specs:
+                self.proxy = "socks5://127.0.0.1:" + self.tor_specs[0]
             self.timeout = 15.0
         with httpx.Client(headers=headers, proxy=self.proxy, timeout=self.timeout) as c:
             # Make the request, get/post logic
