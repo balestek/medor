@@ -84,7 +84,7 @@ Allowed protocols :
 ```bash
 medor find website.com -p http://user.password@255.255.255.255:8080
 # or
-medor find https://www.website.com --proxy=socks5://user.password@255.255.255.255:6154
+medor find https://www.website.com --proxy socks5://user.password@255.255.255.255:6154
 ```
 
 ### Webhook
@@ -94,20 +94,15 @@ By default, _medor_ uses a new webhook from webhook.site ([see credits](#externa
 ```bash
 medor find https://www.website.com -w https://website.com/webhook/kjqh4sfkq4sj5h5f
 # or
-medor find website.com --webhook=https://website.com/webhook/kjqh4sfkq4sj5h5f
+medor find website.com --webhook https://website.com/webhook/kjqh4sfkq4sj5h5f
 ```
 
 ### Darknet / Onion Services
 
-_medor_ works as well with onion websites.
+_medor_ works as well with onion websites. For that, you need tor. There are 2 ways:
 
-First, you need to install the Tor daemon, also known as little-t Tor. _medor_ needs the tor path to use tor.
-
-When using an onion item to search for the first time, you will be prompted to enter the path of the Tor binary. If you need to change the path after the initial setup, you can use the command `medor tor_path`.
-
-Note that it does not work with the `--proxy=` option.
-
-The settings for Tor are as follows: the tor port is 9150 and the controller port is 9151.
+1) Tor Browser running and connected to tor. medor will use it to connect to onion services.
+2) Installing tor on your system. To install tor, see below.
 
 ```bash
 medor find rtfjdnrppk7yj0424wa5i1hc6chq4nj6p3w7tu2q5qh47fmf6pi3.onion
@@ -129,9 +124,9 @@ Extract the tor.exe from the archive to a convenient location on your computer, 
 
 3. Enter the full path of the tor.exe
 
-When prompted during the first IP search for a .onion website, enter the full path of the tor.exe executable. For example, `C:\tor\tor.exe`.
+When prompted during the first search for a .onion website, enter the full path of the tor.exe executable. For example, `C:\tor\tor.exe`.
 
-You can also set the path of the tor executable at any time by using the command `medor tor_path`. 
+You can also set or change the path later by using the command `medor tor_path`. 
 
 ##### Linux and OSX
 
@@ -146,13 +141,14 @@ After installing tor, you can test it by opening a terminal and running the comm
 
 2. Enter the tor command when prompted
 
-When prompted during the first IP search for a .onion website, enter `tor`.
+When prompted during the first search for a .onion website, enter `tor`.
 
-You can also set the path of the tor executable or the tor command at any time by using the command `medor tor_path`.
+You can also set or change the command or path later by using the command `medor tor_path`.
 
 ### Known issues
 
-1) If tor is already running on your system, _medor_ may not be able to launch a new instance of tor. In this case, you may see an error message indicating that. To resolve this issue, you need to stop the existing tor process or kill the tor process. 
+1) If tor is already running on your system, _medor_ may not be able to launch a new instance of tor. 
+To resolve this issue, you need to kill the tor process. When installing tor on Ubuntu, it will start tor at every boot. You need to kill tor process before using _medor_ or disable tor from starting at boot (`sudo systemctl disable tor.service`).
 2) If you get a "Timeout" error, especially with onion services, it may be a temporary issue with the Tor network. Try again.
 
 ### Credits

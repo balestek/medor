@@ -16,7 +16,7 @@ from medor.utils.util import success, failure, warning, spinner
 
 
 class Tor:
-    def __init__(self):
+    def __init__(self) -> None:
         self.net = net.Net(onion=True, timeout=10.0)
         self.tor = None
         self.tor_controller = None
@@ -24,16 +24,18 @@ class Tor:
         self.tor_path = os.getenv("tor_path")
         self.tor_port = os.getenv("tor_port")
         self.tor_controller_port = os.getenv("controller_port")
+        self.tor_browser = None
 
-    def launch(self):
+    def launch(self) -> None:
         # Chaining main functions to start Tor
-        self.set_tor_path()
-        self.ini_connection()
-        self.tor_controller = self.tor_control()
+        self.config_tor()
+        if not self.tor_browser:
+            self.ini_connection()
+            # self.tor_controller = self.tor_control()
         self.new_id()
         self.verify_tor()
 
-    def ini_connection(self):
+    def ini_connection(self) -> None:
         # Check if Tor is already running
         spinner.start("Initializing tor")
         try:
@@ -52,7 +54,7 @@ class Tor:
                 )
                 exit()
 
-    def tor_process(self):
+    def tor_process(self) -> stem.process:
         # Launch tor process
         tor_process = process.launch_tor_with_config(
             config={
@@ -71,7 +73,7 @@ class Tor:
         controller.authenticate()
         return controller
 
-    def start(self):
+    def start(self) -> None:
         # Start tor process and its controller
         if get_system_tor_version(self.tor_path) >= Requirement.TORRC_CONTROL_SOCKET:
             try:
@@ -90,28 +92,21 @@ class Tor:
             )
             exit()
 
-    def new_id(self):
+    def new_id(self) -> None:
         # Create a new tor identity before running medor functions
         spinner.start("Setting new tor circuits")
         recommended = self.tor_controller.get_info("status/version/recommended").split(
             ","
         )
         # Check if tor is up-to-date
-        self.tor_recommended(recommended)
+        if not self.tor_browser:
+            self.tor_recommended(recommended)
         # Check if a new identity can be set
         if self.tor_controller.is_newnym_available():
             self.tor_controller.signal(Signal.NEWNYM)
             spinner.stop_and_persist(symbol=success, text="Tor new circuits set")
 
-    def shutdown(self):
-        # Shut down tor process. Was previously used but take_ownership=True in tor_process() is more adapted
-        spinner.start("Shutting down tor")
-        self.tor_controller = self.tor_control()
-        self.tor_controller.signal(Signal.SHUTDOWN)
-        spinner.stop_and_persist(symbol=success, text="Tor shut down")
-        exit()
-
-    def verify_tor(self):
+    def verify_tor(self) -> None:
         # Check if tor is active with check.torproject.org
         spinner.start("Checking Tor Exit IP")
         try:
@@ -146,7 +141,7 @@ class Tor:
         )
         exit()
 
-    def get_exit(self):
+    def get_exit(self) -> str or None:
         # Get tor exit node IP
         for circ in self.tor_controller.get_circuits():
             if circ.status != CircStatus.BUILT:
@@ -156,7 +151,7 @@ class Tor:
             exit_address = exit_desc.address if exit_desc else "unknown"
             return exit_address
 
-    def tor_recommended(self, recommended):
+    def tor_recommended(self, recommended) -> None:
         # Get stem recommended tor version and compare it to tor version
         present = str(get_system_tor_version(self.tor_path)).split(" ")[0]
         if present not in recommended:
@@ -166,54 +161,36 @@ class Tor:
             )
         return
 
-    def check_env(self):
+    def check_env(self) -> None:
         # check if .env file exists and create it if not
         env_path = Path(__file__).parent.parent.joinpath(".env")
         if not env_path.exists():
             env_path.touch(mode=0o777)
             env_path.write_text(
-                "tor_port=9050\n" "controller_port=9051\n" "tor_ip='127.0.0.1'\n"
+                "tor_port=9250\ncontroller_port=9251\ntor_ip='127.0.0.1'\ntor_browser=0\n"
             )
 
-    def set_tor_path(self):
-        # Set tor path and ports
-        self.check_env()
-        load_dotenv()
-        tor_path = os.getenv("tor_path")
-        # Launch setup if tor path is not set
-        if not tor_path:
-            self.tor_setup()
-        else:
-            self.tor_path = str(Path(tor_path))
-        self.tor_port = os.getenv("tor_port")
-        self.tor_controller_port = int(os.getenv("controller_port"))
-
-    def tor_setup(self) -> None:
-        # Setup tor path in .env file
-        spinner.stop_and_persist(
-            symbol=warning,
-            text=f"{Fore.YELLOW}You have to install tor first. If you haven't, see README.md.\n"
-            f"   https://github.com/balestek/medor?tab=readme-ov-file#install-tor",
-        )
-        tor_path = input(
-            f"""➡️ Tor binary path or command:\n"""
-            f"""       Linux and OSX : "tor" or "/usr/bin/tor" on debian/ubuntu\n"""
-            f"""       Windows: full path to tor.exe. E.g. """
-            + r"C:\Tor\tor.exe"
-            + "\n"
-            f"""   Enter the path: """
-        )
-        if len(tor_path) == 0:
-            spinner.stop_and_persist(
-                symbol=failure,
-                text=f"{Fore.RED}You should enter a path.",
-            )
-            exit()
-        self.tor_path = str(Path(tor_path))
-        self.tor_port = 9050
-        self.tor_controller_port = 9051
-        # Test if tor is working with the path
+    def check_tor_browser(self) -> bool or None:
+        # Check if tor browser is running
         try:
+            controller = Controller.from_port(port=9151)
+            controller.authenticate()
+            self.tor_port = 9150
+            self.tor_controller_port = 9151
+            self.tor_controller = controller
+            spinner.stop_and_persist(
+                symbol=success, text=f"Tor browser detected. medor will use it."
+            )
+            return True
+        except Exception:
+            return None
+
+    def check_tor_process(self, tor_path) -> None:
+        # Test if tor is working with the provided path
+        try:
+            self.tor_path = str(Path(tor_path))
+            self.tor_port = 9250
+            self.tor_controller_port = 9251
             test_tor = process.launch_tor_with_config(
                 config={
                     "ControlPort": str(self.tor_controller_port),
@@ -222,6 +199,14 @@ class Tor:
                 tor_cmd=self.tor_path,
                 completion_percent=100,
                 take_ownership=True,
+            )
+            test_tor.terminate()
+            # wait a bit for tor to exit cleanly
+            time.sleep(1)
+            # Set tor path in .env file
+            set_key(Path(__file__).parent.parent.joinpath(".env"), "tor_path", tor_path)
+            spinner.stop_and_persist(
+                symbol=success, text=f"{Fore.GREEN}Tor path successfully set.\n"
             )
         except OSError as e:
             if (
@@ -237,9 +222,6 @@ class Tor:
                     f"""       Windows : "End task" in the Task Manager or "taskkill /f /im tor.exe" in the terminal\n"""
                     f"""       OSX : kill tor in the Activity Monitor or in terminal, "killall tor".""",
                 )
-                set_key(
-                    Path(__file__).parent.parent.joinpath(".env"), "tor_path", tor_path
-                )
             else:
                 spinner.stop_and_persist(
                     symbol=failure,
@@ -247,11 +229,42 @@ class Tor:
                     f"""   Please, check tor path and try again.""",
                 )
             exit()
-        test_tor.terminate()
-        # wait a bit for tor to exit cleanly
-        time.sleep(1)
-        # Set tor path in .env file
-        set_key(Path(__file__).parent.parent.joinpath(".env"), "tor_path", tor_path)
+
+    def tor_setup(self) -> None:
+        # Setup tor path
         spinner.stop_and_persist(
-            symbol=success, text=f"{Fore.GREEN}Tor path successfully set.\n"
+            symbol=warning,
+            text=f"{Fore.YELLOW}You have to start Tor Browser and connect it to Tor, or to install Tor first. If you haven't, see README.md.\n"
+            f"   https://github.com/balestek/medor?tab=readme-ov-file#darknet--onion-services",
         )
+        tor_path = input(
+            f"""➡️ If you installed Tor enter its binary path or command:\n"""
+            f"""       Linux and OSX : "tor" on debian/ubuntu\n"""
+            f"""       Windows: full path to tor.exe. E.g. """
+            + r"C:\Tor\tor.exe"
+            + "\n"
+            f"""   Enter the path: """
+        )
+        if len(tor_path) == 0:
+            spinner.stop_and_persist(
+                symbol=failure,
+                text=f"{Fore.RED}You should enter a path.",
+            )
+            exit()
+        self.check_tor_process(str(Path(tor_path)))
+
+    def config_tor(self) -> None:
+        self.check_env()
+        set_key(Path(__file__).parent.parent.joinpath(".env"), "tor_browser", "0")
+        if self.check_tor_browser():
+            self.tor_browser = True
+            set_key(Path(__file__).parent.parent.joinpath(".env"), "tor_browser", "1")
+            return
+        load_dotenv()
+        tor_path = os.getenv("tor_path")
+        if not tor_path:
+            self.tor_setup()
+        else:
+            self.tor_path = str(Path(tor_path))
+            self.tor_port = os.getenv("tor_port")
+            self.tor_controller_port = int(os.getenv("controller_port"))

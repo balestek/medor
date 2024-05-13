@@ -140,7 +140,7 @@ class Bone:
 
     def find_domain_scheme(self, domain: str) -> str:
         # Test the domain with different schemes to determine the right one
-        schemes = ["https://", "https://www.", "http://", "http://www."]
+        schemes = ["http://", "https://"] if self.onion else ["https://", "https://www.", "http://", "http://www."]
         for scheme in schemes:
             try:
                 url = scheme + domain

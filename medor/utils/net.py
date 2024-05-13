@@ -1,4 +1,5 @@
 # coding: utf-8
+import os
 import importlib
 from pathlib import Path
 from random import choice
@@ -8,6 +9,7 @@ import httpx
 from bs4 import BeautifulSoup as bs
 from colorama import Fore
 from validators import url as valid_url, validator
+from dotenv import load_dotenv
 
 from medor.utils import uas
 from medor.utils.util import success, failure, warning, spinner
@@ -23,8 +25,19 @@ class Net:
         self.medor_path = Path(__file__).parent
         self.onion = onion
         self.uas = uas.uas
-        self.proxy = proxy
-        self.timeout = timeout
+        # Set proxy for tor and a longer timeout as onion requests are slower
+        if self.onion:
+            load_dotenv()
+            self.proxy = (
+                "socks5://127.0.0.1:9150"
+                if os.getenv("tor_browser") == "1"
+                else "socks5://127.0.0.1:9250"
+            )
+            self.timeout = 15.0
+        else:
+            self.proxy = proxy
+            self.timeout = timeout
+
         self._headers = {
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
             "Accept-Encoding": "gzip, deflate, br",
@@ -46,10 +59,6 @@ class Net:
         # Randomize the User-Agent if no header is provided
         if not headers:
             headers = self.rand_headers()
-        # Build the socks5 proxy url for onion requests and set a longer timeout as onion requests are slower
-        if self.onion:
-            self.proxy = "socks5://127.0.0.1:9050"
-            self.timeout = 15.0
         with httpx.Client(headers=headers, proxy=self.proxy, timeout=self.timeout) as c:
             # Make the request, get/post logic
             if rtype == "get":
@@ -63,8 +72,7 @@ class Net:
         if self.onion and not self.valid_onion(url):
             spinner.stop_and_persist(
                 symbol=failure,
-                text=f"{Fore.RED}{url} is not a valid onion url.\n"
-                     "   Check the url.",
+                text=f"{Fore.RED}{url} is not a valid onion url.\n" "   Check the url.",
             )
             exit()
         if valid_url(url):
@@ -76,21 +84,21 @@ class Net:
                     spinner.stop_and_persist(
                         symbol=failure,
                         text=f"{Fore.RED} {url} request is not successful.\n"
-                             "   Check the url.",
+                        "   Check the url.",
                     )
                     exit()
             except httpx.HTTPError as e:
                 spinner.stop_and_persist(
                     symbol=failure,
                     text=f"{Fore.RED} {url} request is not successful : {e}.\n"
-                         "   Check the url.",
+                    "   Check the url.",
                 )
                 exit()
         else:
             spinner.stop_and_persist(
                 symbol=failure,
                 text=f"{Fore.RED}{url} doesn't seem to be well formatted as a valid url.\n"
-                     "   Check the url.",
+                "   Check the url.",
             )
             exit()
 
@@ -149,13 +157,13 @@ class Net:
         except:
             return None
 
-    def rand_headers(self):
+    def rand_headers(self) -> dict[str, str]:
         # Randomize the User-Agent
         self._headers["User-Agent"] = choice(self.uas)
         return self._headers
 
-    def check_proxy(self, proxy):
-        # Check if the proxy if the proxy IP is different from the real IP
+    def check_proxy(self, proxy) -> None:
+        # Check if the proxy IP is different from the real IP
         spinner.start("Checking proxy connection")
         real_ip = self.get_real_ip()
         try:
@@ -165,18 +173,18 @@ class Net:
                     spinner.stop_and_persist(
                         symbol=failure,
                         text=f"{Fore.RED} Proxy check failed:\n"
-                             f"   Your proxy IP ({proxy}) is the same as your real ip ({real_ip}).",
+                        f"   Your proxy IP ({proxy}) is the same as your real ip ({real_ip}).",
                     )
                     exit()
         except httpx.HTTPError as e:
             spinner.stop_and_persist(
                 symbol=failure,
                 text=f"{Fore.RED} Proxy {proxy} check failed : {e}.\n"
-                     f"   Check the proxy url or if https://api64.ipify.org is online.",
+                f"   Check the proxy url or if https://api64.ipify.org is online.",
             )
             exit()
         spinner.stop_and_persist(symbol="🦴".encode("utf-8"), text="Proxy checked")
 
-    def get_real_ip(self):
+    def get_real_ip(self) -> str:
         # Get user IP with ipify to compare with the proxy IP
         return httpx.get("https://api64.ipify.org").text
