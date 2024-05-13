@@ -25,18 +25,8 @@ class Net:
         self.medor_path = Path(__file__).parent
         self.onion = onion
         self.uas = uas.uas
-        # Set proxy for tor and a longer timeout as onion requests are slower
-        if self.onion:
-            load_dotenv()
-            self.proxy = (
-                "socks5://127.0.0.1:9150"
-                if os.getenv("tor_browser") == "1"
-                else "socks5://127.0.0.1:9250"
-            )
-            self.timeout = 15.0
-        else:
-            self.proxy = proxy
-            self.timeout = timeout
+        self.proxy = proxy
+        self.timeout = timeout
 
         self._headers = {
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
@@ -59,6 +49,15 @@ class Net:
         # Randomize the User-Agent if no header is provided
         if not headers:
             headers = self.rand_headers()
+        # Set port for Onion Services and set a longer timeout
+        if self.onion:
+            load_dotenv()
+            self.proxy = (
+                "socks5://127.0.0.1:9150"
+                if os.getenv("tor_browser") == "1"
+                else "socks5://127.0.0.1:9250"
+            )
+            self.timeout = 15.0
         with httpx.Client(headers=headers, proxy=self.proxy, timeout=self.timeout) as c:
             # Make the request, get/post logic
             if rtype == "get":

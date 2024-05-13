@@ -58,8 +58,8 @@ class Tor:
         # Launch tor process
         tor_process = process.launch_tor_with_config(
             config={
-                "ControlPort": str(self.tor_controller_port),
-                "SocksPort": str(self.tor_port),
+                "ControlPort": self.tor_controller_port,
+                "SocksPort": self.tor_port,
             },
             tor_cmd=self.tor_path,
             completion_percent=100,
@@ -175,8 +175,8 @@ class Tor:
         try:
             controller = Controller.from_port(port=9151)
             controller.authenticate()
-            self.tor_port = 9150
-            self.tor_controller_port = 9151
+            self.tor_port = "9150"
+            self.tor_controller_port = "9151"
             self.tor_controller = controller
             spinner.stop_and_persist(
                 symbol=success, text=f"Tor browser detected. medor will use it."
@@ -189,12 +189,12 @@ class Tor:
         # Test if tor is working with the provided path
         try:
             self.tor_path = str(Path(tor_path))
-            self.tor_port = 9250
-            self.tor_controller_port = 9251
+            self.tor_port = "9250"
+            self.tor_controller_port = "9251"
             test_tor = process.launch_tor_with_config(
                 config={
-                    "ControlPort": str(self.tor_controller_port),
-                    "SocksPort": str(self.tor_port),
+                    "ControlPort": self.tor_controller_port,
+                    "SocksPort": self.tor_port,
                 },
                 tor_cmd=self.tor_path,
                 completion_percent=100,
@@ -267,4 +267,4 @@ class Tor:
         else:
             self.tor_path = str(Path(tor_path))
             self.tor_port = os.getenv("tor_port")
-            self.tor_controller_port = int(os.getenv("controller_port"))
+            self.tor_controller_port = os.getenv("controller_port")
