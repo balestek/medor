@@ -4,7 +4,7 @@
   <img src="https://raw.githubusercontent.com/balestek/medor/master/media/medor-logo.png">
 </p>
 
-[![PyPI version](https://badge.fury.io/py/medor.svg)](https://badge.fury.io/py/medor)
+[![PyPI](https://img.shields.io/pypi/v/medor.svg)](https://pypi.org/project/medor/)
 ![Python minimum version](https://img.shields.io/badge/Python-3.8%2B-brightgreen)
 [![Downloads](https://pepy.tech/badge/medor)](https://pepy.tech/project/medor)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -101,7 +101,7 @@ medor find website.com --webhook https://website.com/webhook/kjqh4sfkq4sj5h5f
 
 _medor_ works as well with onion websites. For that, you need tor. There are 2 ways:
 
-1) Tor Browser running and connected to tor. medor will use it to connect to onion services.
+1) Tor Browser running and connected to tor. _medor_ will use it to connect to onion services.
 2) Installing tor on your system. To install tor, see below.
 
 ```bash
