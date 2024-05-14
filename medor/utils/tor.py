@@ -31,7 +31,6 @@ class Tor:
         self.config_tor()
         if not self.tor_browser:
             self.ini_connection()
-            # self.tor_controller = self.tor_control()
         self.new_id()
         self.net = net.Net(onion=True, timeout=10.0, tor = self.get_tor_ports())
         self.verify_tor()
